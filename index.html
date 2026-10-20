@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Estoque · Casa de Madeira</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside>
+      <a class="brand" href="#"
+        ><span class="logo">⌂</span
+        ><strong>casa de madeira<small>RESTAURANTE</small></strong></a
+      >
+      <div class="nav-label">GESTÃO DO RESTAURANTE</div>
+      <nav>
+        <button data-view="stock" class="active">
+          ▦ <span>Estoque de ingredientes</span></button
+        ><button data-view="history">⇄ <span>Movimentações</span></button
+        ><button data-view="alerts">
+          ♧ <span>Alertas de estoque</span><b id="nav-count">0</b>
+        </button>
+      </nav>
+      <div class="aside-bottom">
+        <span class="avatar">CM</span>
+        <div>Casa de Madeira<small>Controle de estoque</small></div>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <span>Casa de Madeira <i>/</i> <b>Controle de estoque</b></span
+        ><span id="today"></span
+        ><button id="logout" class="secondary">Sair</button>
+      </header>
+      <section class="content">
+        <div class="heading">
+          <div>
+            <div class="eyebrow">CADA INGREDIENTE NO SEU LUGAR</div>
+            <h1 id="view-title">Estoque de ingredientes</h1>
+            <p id="view-description">
+              Uma visão clara do que sua cozinha tem e do que precisa.
+            </p>
+          </div>
+          <button class="primary" id="new">＋ Novo ingrediente</button>
+        </div>
+        <div class="stats">
+          <article>
+            <span>Ingredientes cadastrados</span>
+            <div><strong id="total">0</strong><i>▦</i></div>
+            <small>Produtos no seu estoque</small>
+          </article>
+          <article>
+            <span>Estoque em dia</span>
+            <div><strong id="healthy">0</strong><i class="green">✓</i></div>
+            <small>Acima do mínimo definido</small>
+          </article>
+          <article>
+            <span>Precisam de atenção</span>
+            <div><strong id="low">0</strong><i class="amber">!</i></div>
+            <small>No mínimo ou abaixo dele</small>
+          </article>
+          <article>
+            <span>Movimentações hoje</span>
+            <div><strong id="moves">0</strong><i>⇄</i></div>
+            <small>Entradas e saídas registradas</small>
+          </article>
+        </div>
+        <div class="notice" id="notice" hidden></div>
+        <div class="panel">
+          <div class="panel-top">
+            <div>
+              <h2 id="panel-title">Seus ingredientes</h2>
+              <span id="result-count"></span>
+            </div>
+            <button class="secondary" id="movement">
+              ⇄ Registrar movimentação
+            </button>
+          </div>
+          <div class="filters">
+            <label class="search"
+              >⌕
+              <input
+                id="search"
+                placeholder="Buscar ingrediente…"
+                aria-label="Buscar ingrediente" /></label
+            ><select id="category" aria-label="Categoria">
+              <option value="">Todas as categorias</option>
+              <option>Hortifruti</option>
+              <option>Proteínas</option>
+              <option>Grãos e cereais</option>
+              <option>Laticínios</option>
+              <option>Temperos</option>
+              <option>Bebidas</option>
+              <option>Outros</option></select
+            ><select id="status" aria-label="Situação">
+              <option value="">Todas as situações</option>
+              <option value="ok">Estoque em dia</option>
+              <option value="low">Estoque baixo</option>
+              <option value="zero">Sem estoque</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead id="thead"></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <div class="panel-footer">
+            <span id="footer-count"></span
+            ><span>Organização que faz parte da receita.</span>
+          </div>
+        </div>
+        <footer>
+          ⌂ Casa de Madeira
+          <span>Dados compartilhados e salvos no PostgreSQL</span
+          ><button id="backup">Exportar backup</button
+          ><button id="restore">Restaurar backup</button
+          ><input type="file" id="file" accept="application/json" hidden />
+        </footer>
+      </section>
+    </main>
+    <dialog id="dialog">
+      <form id="form">
+        <div class="dialog-head">
+          <h2 id="dialog-title"></h2>
+          <button type="button" id="close" aria-label="Fechar">×</button>
+        </div>
+        <div id="fields"></div>
+        <p id="error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancel">Cancelar</button
+          ><button class="primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acesso administrativo · Casa de Madeira</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="login-page">
+    <section class="login-card">
+      <a class="brand" href="/login.html">
+        <span class="logo">⌂</span>
+        <strong>casa de madeira<small>RESTAURANTE</small></strong>
+      </a>
+      <div class="eyebrow">CONTROLE DE ESTOQUE</div>
+      <h1>Acesso administrativo</h1>
+      <p>Entre para acompanhar os ingredientes da sua cozinha.</p>
+      <form id="login-form">
+        <label
+          >Usuário
+          <input
+            name="username"
+            autocomplete="username"
+            maxlength="80"
+            required
+            autofocus
+          />
+        </label>
+        <label
+          >Senha
+          <input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            maxlength="256"
+            required
+          />
+        </label>
+        <p id="login-error" role="alert" aria-live="polite"></p>
+        <button class="primary" type="submit">Entrar no estoque</button>
+      </form>
+      <small class="muted"
+        >Acesso exclusivo aos administradores do restaurante.</small
+      >
+    </section>
+    <script src="login.js"></script>
+  </body>
+</html>
