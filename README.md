@@ -1,71 +1,112 @@
-# Casa de Madeira — Controle de estoque
+# Casa de Madeira — Controle de Estoque
 
-HTML, CSS e JavaScript no navegador, com um servidor Node.js e PostgreSQL.
-O servidor é necessário para proteger o acesso e manter o banco fora do navegador.
-Não há cadastro público: existe somente o administrador definido em `server.js`.
+Sistema de controle de ingredientes do restaurante Casa de Madeira. Consulte as quantidades disponíveis, registre entradas e saídas e acompanhe os produtos que precisam de reposição.
 
-## Publicar no Render
+## Acessar o sistema
 
-1. Envie esta pasta para um repositório GitHub, incluindo `package-lock.json`.
-   Não envie `.env` nem `node_modules`.
-2. No Render, selecione **New → Blueprint**, conecte o repositório e use `render.yaml`.
-   Revise os planos e os custos antes de criar os serviços.
-3. O login já está definido em `server.js`: usuário `admin` e senha `CasaMadeira@2026!`.
-4. O Blueprint cria o Web Service e o PostgreSQL. A conexão interna é configurada
-   por `DATABASE_URL` e o segredo de sessão é gerado automaticamente.
-5. Abra a URL do Web Service e entre com o login definido acima.
+Abra o endereço do sistema no navegador e entre com seu usuário e senha de administrador. Após entrar, você verá o painel de estoque.
 
-Se preferir criar manualmente: crie um PostgreSQL e um **Web Service Node** na mesma
-região. Build: `npm ci --omit=dev`. Start: `npm start`. Health check: `/health`.
-Configure `DATABASE_URL` com a **Internal Database URL** do banco, `NODE_ENV=production`,
-e `SESSION_SECRET` (segredo aleatório com pelo menos 32 caracteres).
-Use `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
-para gerar o segredo localmente.
+O acesso é exclusivo aos administradores. Para encerrar a sessão, clique em **Sair** no topo da página.
 
-O sistema cria as tabelas automaticamente na inicialização. `database.sql` contém
-o esquema. O inventário e o histórico ficam em JSONB no PostgreSQL, com revisão
-para rejeitar gravações desatualizadas. As sessões também ficam no PostgreSQL.
+## Entender o painel
 
-## Login definido
+O painel mostra:
 
-- Usuário inicial: `admin`.
-- Senha fixa: `CasaMadeira@2026!`.
-- As credenciais estão no código do servidor e ficam visíveis a quem acessar o repositório.
-- A senha é armazenada no banco como hash com salt (scrypt).
-- A sessão usa cookie HttpOnly, SameSite Strict e Secure em produção; dura 8 horas.
-- Há limite de tentativas de login e proteção de origem nas gravações.
-- Para mudar usuário ou senha, altere `ADMIN_USERNAME` e `ADMIN_PASSWORD` em `server.js` e publique novamente.
-  O administrador é atualizado na inicialização. Trocar só a senha não encerra
-  sessões existentes: para encerrá-las, altere também `SESSION_SECRET`.
-- Ao trocar o usuário, as contas anteriores são removidas automaticamente.
+- **Ingredientes cadastrados:** total de produtos no estoque.
+- **Estoque em dia:** ingredientes com quantidade acima do mínimo definido.
+- **Precisam de atenção:** ingredientes com quantidade igual ou inferior ao mínimo.
+- **Movimentações hoje:** quantidade de entradas e saídas registradas no dia.
 
-## Executar no computador
+## Cadastrar um ingrediente
 
-1. Instale Node.js 22 ou superior e PostgreSQL.
-2. Crie um banco chamado `casa_madeira`.
-3. Copie `.env.example` para `.env` e preencha a conexão do banco e o segredo de sessão.
-4. Execute `npm ci` e depois `npm start`.
-5. Acesse `http://localhost:3000`.
+1. Clique em **Novo ingrediente**.
+2. Informe o nome e escolha a categoria.
+3. Selecione a unidade de medida: kg, g, L, mL ou un.
+4. Preencha a quantidade inicial disponível.
+5. Defina o estoque mínimo para receber um alerta de reposição.
+6. Clique em **Salvar**.
 
-Agora o sistema deve ser aberto pelo servidor; abrir `index.html` diretamente não
-conecta ao banco e não permite fazer login.
+Use sempre a mesma unidade ao movimentar um ingrediente. Por exemplo: se o arroz está cadastrado em kg, uma saída de 500 g deve ser registrada como 0,5 kg.
 
-## Dados anteriores e backups
+Não é permitido cadastrar dois ingredientes com o mesmo nome. Uma quantidade inicial maior que zero aparece no histórico como entrada de estoque inicial.
 
-Se você já cadastrou ingredientes na versão local, abra essa versão no navegador
-original e exporte o backup antes de substituí-la. Depois de entrar no novo sistema,
-use **Restaurar backup**. A restauração substitui o estoque e o histórico compartilhados
-e solicita confirmação. São aceitos arquivos JSON de até 5 MB.
-Os dados locais antigos não são enviados automaticamente ao servidor.
+## Consultar e editar ingredientes
 
-## Arquivos para o GitHub
+Na tela **Estoque de ingredientes**, use a busca pelo nome ou filtre por categoria e situação.
 
-Envie os arquivos do projeto, incluindo `package-lock.json`, `database.sql`,
-`.gitignore` e `render.yaml`. O servidor usa `database.sql` para criar as tabelas.
-O Render usa `package-lock.json` para instalar as dependências.
+Cada linha mostra a quantidade disponível, o estoque mínimo e a situação do produto. Clique em **Editar** para alterar o nome, a categoria ou o estoque mínimo.
 
-Não envie `.env` nem `node_modules/`: ambos já estão no `.gitignore`.
-Mantenha-os no computador para continuar executando localmente.
+Para alterar a quantidade disponível, registre uma entrada ou saída. A unidade de medida não pode ser alterada após o cadastro.
 
-Documentação oficial: https://render.com/docs/deploy-node-express-app e
-https://render.com/docs/postgresql-creating-connecting.
+## Registrar entradas
+
+Registre uma entrada quando receber produtos ou repor o estoque.
+
+1. Clique em **Registrar movimentação** ou no botão **+** do ingrediente.
+2. Selecione o ingrediente e o tipo **Entrada de produtos**.
+3. Informe a quantidade recebida na unidade cadastrada.
+4. Se desejar, acrescente uma observação, como “Compra da semana”.
+5. Clique em **Salvar**.
+
+A quantidade é somada ao saldo disponível.
+
+## Registrar saídas
+
+Registre uma saída quando usar ingredientes na cozinha ou retirar produtos por perda ou descarte.
+
+1. Clique em **Registrar movimentação** ou no botão **−** do ingrediente.
+2. Selecione o ingrediente e o tipo **Saída de produtos**.
+3. Informe a quantidade retirada na unidade cadastrada.
+4. Se desejar, descreva o motivo na observação.
+5. Clique em **Salvar**.
+
+A quantidade é descontada do saldo. O sistema impede saídas maiores que a quantidade disponível.
+
+## Acompanhar os alertas
+
+Abra **Alertas de estoque** no menu para consultar os ingredientes que precisam de reposição.
+
+- **Em dia:** quantidade acima do mínimo.
+- **Estoque baixo:** quantidade igual ou inferior ao mínimo, mas maior que zero.
+- **Sem estoque:** quantidade disponível igual a zero.
+
+Os alertas aparecem dentro do sistema e são atualizados conforme as movimentações. Não há envio de notificações por e-mail ou WhatsApp.
+
+## Consultar o histórico
+
+Abra **Movimentações** para acompanhar as entradas e saídas, das mais recentes para as mais antigas. Cada registro informa o ingrediente, o tipo de movimentação, a quantidade, a data, o horário e a observação.
+
+Use a busca para encontrar as movimentações de um ingrediente.
+
+## Exportar e restaurar um backup
+
+Clique em **Exportar backup** no rodapé para baixar um arquivo com os ingredientes e o histórico de movimentações. Guarde esse arquivo em um local seguro.
+
+Para recuperar um backup, clique em **Restaurar backup**, selecione o arquivo JSON exportado pelo sistema e confira a confirmação antes de continuar.
+
+**A restauração substitui todo o estoque e o histórico compartilhados pelos dados do arquivo.** Exporte um backup atual antes de restaurar outro. O limite do arquivo é de 5 MB.
+
+## Usar em mais de um dispositivo
+
+Os dados são salvos no banco de dados e compartilhados entre os dispositivos que acessam o mesmo sistema. Mantenha a conexão com a internet durante o uso da versão online.
+
+Se outra pessoa alterar o estoque enquanto você registra uma operação, o sistema pode pedir que você refaça o lançamento com o saldo atualizado. Confira o novo saldo antes de tentar novamente.
+
+## Dúvidas frequentes
+
+### Não consigo entrar
+
+Confira o usuário e a senha, incluindo letras maiúsculas e minúsculas. Se houver muitas tentativas incorretas, aguarde 15 minutos antes de tentar novamente. Se o problema continuar, procure o responsável pelo sistema.
+
+### Minha sessão terminou
+
+Entre novamente para continuar usando o estoque. A sessão tem duração de até 8 horas.
+
+### O sistema não salvou uma alteração
+
+Confira sua conexão e a mensagem exibida. Antes de repetir o lançamento, consulte o saldo e o histórico para verificar se a operação já foi registrada.
+
+### Cadastrei uma quantidade incorreta
+
+Registre uma movimentação compensatória e explique a correção na observação. Por exemplo: se registrou uma entrada de 10 kg em vez de 8 kg, registre uma saída de 2 kg com a observação “Correção de lançamento”.
+
